@@ -14,6 +14,7 @@ import router1 from "./routes/route.js";
 // *****************************
 
 
+dotenv.config();
 const app: Application = express();
 
 const __filename: string = fileURLToPath(import.meta.url);
@@ -21,7 +22,6 @@ const __dirname: string = path.dirname(__filename);
 const publicPath: string = path.join(__dirname, '..', 'public');
 
 
-dotenv.config();
 try {
     if (!process.env.PORT || !process.env.MONGODB_URL) {
         throw new Error("set environment variables properly");
