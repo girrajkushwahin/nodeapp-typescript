@@ -34,6 +34,6 @@ const customerSchema: Schema<ICustomerDoc> = new Schema<ICustomerDoc>({
 const Customer: Model<ICustomerDoc> = model<ICustomerDoc>("customer", customerSchema);
 
 export default Customer;
-export type { ICustomerDoc }
+export type { ICustomerDoc } // when 'isolatedModules' is enabled, we need to use 'type' keyword for exporting interfaces & types
 
 // if we don't want '_id' field for nested documents in orders array then we can define separate schema for nested documents and set '_id' to false there. Then we can use that schema inside orders array in the main scehma.
