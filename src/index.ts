@@ -21,9 +21,11 @@ const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
 const publicPath: string = path.join(__dirname, '..', 'public');
 
+const PORT: string | undefined = process.env.PORT;
+const MONGODB_URL: string | undefined = process.env.MONGODB_URL;
 
 try {
-    if (!process.env.PORT || !process.env.MONGODB_URL) {
+    if (!PORT || !MONGODB_URL) {
         throw new Error("set environment variables properly");
     }
 } catch (err) {
@@ -32,8 +34,8 @@ try {
     // cleanup() // do cleanup before exit(if needed) like closing DB connections, releasing resources etc.
     process.exit(1);
 }
-const PORT: string = process.env.PORT;
-connectDB(process.env.MONGODB_URL);
+
+connectDB(MONGODB_URL);
 
 
 app.use(cors());
@@ -68,6 +70,23 @@ app.get("/", (req: Request, res: Response): void => {
     res.json({ status: "success", message: "Node.js-TypeScript application" });
 });
 
-app.listen(PORT, (): void => {
+const portNumber: number = parseInt(PORT, 10); // base 10 represents decimal number system & "parseInt('hi', 10)" returns NaN
+if (isNaN(portNumber)) {
+    console.error("PORT must be a valid number");
+    process.exit(1);
+} else {
+    app.listen(portNumber, (): void => {
+        console.log(`Server running on PORT ${portNumber}`);
+    });
+}
+
+// app.listen() can accept the port number as either a string or a number - "8000" or 8000
+
+/*
+app.listen(PORT as string, (): void => {
     console.log(`Server running on PORT ${PORT}`);
-});
+}).on('error', (err: Error): void => {
+    // This is executed if PORT is not a valid number
+    console.error("Server Error, check PORT: ", err);
+})
+*/
