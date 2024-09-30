@@ -15,17 +15,12 @@ import router1 from "./routes/route.js";
 
 
 dotenv.config();
-const app: Application = express();
-
-const __filename: string = fileURLToPath(import.meta.url);
-const __dirname: string = path.dirname(__filename);
-const publicPath: string = path.join(__dirname, '..', 'public');
 
 const PORT: string | undefined = process.env.PORT;
-const MONGODB_URL: string | undefined = process.env.MONGODB_URL;
+const MONGO_URI: string | undefined = process.env.MONGO_URI;
 
 try {
-    if (!PORT || !MONGODB_URL) {
+    if (!PORT || !MONGO_URI) {
         throw new Error("set environment variables properly");
     }
 } catch (err) {
@@ -35,7 +30,12 @@ try {
     process.exit(1);
 }
 
-connectDB(MONGODB_URL);
+
+const app: Application = express();
+
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
+const publicPath: string = path.join(__dirname, '..', 'public');
 
 
 app.use(cors());
@@ -75,9 +75,15 @@ if (isNaN(portNumber)) {
     console.error("PORT must be a valid number");
     process.exit(1);
 } else {
-    app.listen(portNumber, (): void => {
-        console.log(`Server running on PORT ${portNumber}`);
-    });
+    connectDB(MONGO_URI).then((): void => {
+        console.log("database connected...");
+        app.listen(portNumber, (): void => {
+            console.log(`Server running on PORT ${portNumber}`);
+        });
+    }).catch((err: Error): void => {
+        console.log("error connecting database...");
+        console.error(err.message);
+    })
 }
 
 // app.listen() can accept the port number as either a string or a number - "8000" or 8000
